@@ -17,8 +17,12 @@ class _DetailPageState extends State<DetailPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Detail Page'),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
         ),
+        title: Text('Detail Page'),
+      ),
         body: Container(
           padding: EdgeInsets.all(20),
           child: Column(

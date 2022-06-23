@@ -4,11 +4,19 @@ import 'dart:developer';
 
 import 'package:c14190016_01/apiServices.dart';
 import 'package:c14190016_01/detail.dart';
+import 'package:c14190016_01/favorite.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'dataClass.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -23,7 +31,60 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
+      home: const BottomNavigationPage()
+    );
+  }
+}
+
+class BottomNavigationPage extends StatefulWidget {
+  const BottomNavigationPage({Key? key}) : super(key: key);
+
+  @override
+  State<BottomNavigationPage> createState() => _BottomNavigationPageState();
+}
+
+class _BottomNavigationPageState extends State<BottomNavigationPage> {
+  int _currentIndex = 0;
+
+  List<String> title = ['Home', 'Favorite'];
+  String _appBarTitle = "Home";
+
+  final List<Widget> _screens = [HomePage(), FavoritePage()];
+
+  BottomNavigationBarItem bottomNavigationBarItem(Icon icon, String label) {
+    return BottomNavigationBarItem(
+      icon: icon,
+      label: label,
+    );
+  }
+
+  void onTappedBar(int index) {
+    setState(() {
+      _currentIndex = index;
+      _appBarTitle = title[index];
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_appBarTitle),
+      ),
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: onTappedBar,
+        currentIndex: _currentIndex,
+        iconSize: 30,
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: [
+          bottomNavigationBarItem(Icon(Icons.home), 'Home'),
+          bottomNavigationBarItem(Icon(Icons.favorite), 'Favorite'),
+        ],
+      ),
     );
   }
 }
@@ -52,19 +113,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-      ),
       body: Container(
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search), 
+                prefixIcon: Icon(Icons.search),
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             Expanded(
               child: FutureBuilder<News>(
                 future: _news,
@@ -77,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                     return ListView.separated(
                       itemBuilder: (context, index) {
                         Post post = listPost[index];
-            
+
                         return Card(
                           child: ListTile(
                             leading: ClipRRect(
@@ -87,7 +147,11 @@ class _HomePageState extends State<HomePage> {
                             title: Text(post.title),
                             subtitle: Text(post.description),
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(dataPost: post)));  
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailPage(dataPost: post)));
                             },
                             trailing: Icon(Icons.arrow_forward_ios),
                           ),
@@ -99,8 +163,10 @@ class _HomePageState extends State<HomePage> {
                       itemCount: listPost.length,
                     );
                   }
-            
-                  return Center(child: CircularProgressIndicator(),);
+
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 },
               ),
             ),
