@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:c14190016_01/dataClass.dart';
+import 'package:c14190016_01/firestoreService.dart';
 import 'package:flutter/material.dart';
 
 class DetailPage extends StatefulWidget {
@@ -17,12 +18,12 @@ class _DetailPageState extends State<DetailPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back),
+          ),
+          title: Text('Detail Page'),
         ),
-        title: Text('Detail Page'),
-      ),
         body: Container(
           padding: EdgeInsets.all(20),
           child: Column(
@@ -31,26 +32,47 @@ class _DetailPageState extends State<DetailPage> {
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(widget.dataPost.thumbnail),
               ),
-              SizedBox(height: 30,),
-              ListTile(
-                title: Text('Link: '),
-                subtitle: Text(widget.dataPost.link)
+              SizedBox(
+                height: 30,
               ),
-              SizedBox(height: 10,),
               ListTile(
-                title: Text('Title: '),
-                subtitle: Text(widget.dataPost.title)
+                  title: Text('Link: '), subtitle: Text(widget.dataPost.link)),
+              SizedBox(
+                height: 10,
               ),
-              SizedBox(height: 10,),
               ListTile(
-                title: Text('Publication Date: '),
-                subtitle: Text(widget.dataPost.pubDate)
+                  title: Text('Title: '),
+                  subtitle: Text(widget.dataPost.title)),
+              SizedBox(
+                height: 10,
               ),
-              SizedBox(height: 10,),
               ListTile(
-                title: Text('Description: '),
-                subtitle: Text(widget.dataPost.description)
+                  title: Text('Publication Date: '),
+                  subtitle: Text(widget.dataPost.pubDate)),
+              SizedBox(
+                height: 10,
               ),
+              ListTile(
+                  title: Text('Description: '),
+                  subtitle: Text(widget.dataPost.description)),
+              SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  FirestoreDatabase.addData(post: widget.dataPost);
+                },
+                child: Text('LIKE'),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  FirestoreDatabase.deleteData(post: widget.dataPost);
+                },
+                child: Text('UNLIKE'),
+              )
             ],
           ),
         ),

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class News {
   bool success;
   dynamic message;
@@ -75,6 +77,16 @@ class Post {
       pubDate: json['pubDate'],
       description: json['description'],
       thumbnail: json['thumbnail'],
+    );
+  }
+
+  factory Post.fromDocument(DocumentSnapshot doc) {
+    return Post(
+      link: doc.get('link'),
+      title: doc.get('title'),
+      pubDate: doc.get('pubDate'),
+      description: doc.get('description'),
+      thumbnail: doc.get('thumbnail'),
     );
   }
 }

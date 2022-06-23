@@ -27,12 +27,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'UAS AMBW',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const BottomNavigationPage()
-    );
+        title: 'UAS AMBW',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const BottomNavigationPage());
   }
 }
 
@@ -101,6 +100,8 @@ class _HomePageState extends State<HomePage> {
   //late Future<List<Data>> _listData;
   late Future<News> _news;
 
+  String searchBarValue = "";
+
   @override
   void initState() {
     // TODO: implement initState
@@ -121,6 +122,11 @@ class _HomePageState extends State<HomePage> {
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search),
               ),
+              onChanged: (value) {
+                setState(() {
+                  searchBarValue = value;
+                });
+              },
             ),
             SizedBox(
               height: 20,
@@ -134,33 +140,45 @@ class _HomePageState extends State<HomePage> {
                   } else if (snapshot.hasData || snapshot.data != null) {
                     News isiData = snapshot.data!;
                     List<Post> listPost = isiData.data.posts;
+                    List<Post> filtered = [];
+                    if (searchBarValue == "") {
+                      filtered = listPost;
+                    } 
+                    else {
+                      for (var post in listPost) {
+                        if (post.title.toLowerCase().contains(searchBarValue.toLowerCase())) {
+                          filtered.add(post);
+                        }
+                      }
+                    }
+
                     return ListView.separated(
                       itemBuilder: (context, index) {
-                        Post post = listPost[index];
+                        Post post = filtered[index];
 
                         return Card(
-                          child: ListTile(
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(post.thumbnail),
+                            child: ListTile(
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(post.thumbnail),
+                              ),
+                              title: Text(post.title),
+                              subtitle: Text(post.description),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DetailPage(dataPost: post)));
+                              },
+                              trailing: Icon(Icons.arrow_forward_ios),
                             ),
-                            title: Text(post.title),
-                            subtitle: Text(post.description),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DetailPage(dataPost: post)));
-                            },
-                            trailing: Icon(Icons.arrow_forward_ios),
-                          ),
-                        );
+                          );
                       },
                       separatorBuilder: (context, index) {
                         return Divider();
                       },
-                      itemCount: listPost.length,
+                      itemCount: filtered.length,
                     );
                   }
 

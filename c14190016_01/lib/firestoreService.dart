@@ -1,9 +1,14 @@
 import 'package:c14190016_01/dataClass.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class FirestoreDatabase {
   static CollectionReference tbFavorite =
       FirebaseFirestore.instance.collection('tbFavorite');
+
+  static Stream<QuerySnapshot> getData() {
+    return tbFavorite.snapshots();
+  }
 
   static Future<void> addData({required Post post}) async {
     DocumentReference doc = tbFavorite.doc(post.title);
@@ -22,8 +27,8 @@ class FirestoreDatabase {
         .catchError((e) => print(e));
   }
 
-  static Future<void> deleteData({required Consumer consumer}) async {
-    DocumentReference doc = tbConsumer.doc(consumer.email);
+  static Future<void> deleteData({required Post post}) async {
+    DocumentReference doc = tbFavorite.doc(post.title);
 
     await doc
         .delete()
